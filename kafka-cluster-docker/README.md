@@ -22,4 +22,5 @@ docker exec -it kafka1 /opt/bitnami/kafka/bin/kafka-console-producer.sh \<br />
 <br />
 Once this command runs, you can start typing messages, and they’ll be sent <br />to test-topic1.
 <br />
+<br />
 2- Check messages from UI.<br />
