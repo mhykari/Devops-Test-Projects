@@ -1,0 +1,77 @@
+Verify Kafka Service Availability:
+docker exec -it test-service ping kafka1
+
+Check Kafka Broker Health:
+docker exec -it kafka1 /opt/bitnami/kafka/bin/kafka-topics.sh \
+  --list --bootstrap-server kafka1:9092
+
+Access Redpanda Console:
+Open http://localhost:8080 in your browser to monitor topics, consumer groups, and messages directly from the UI.
+
+Verifying the Kafka Cluster:
+docker exec kafka1 kafka-broker-api-versions.sh --bootstrap-server kafka1:9092
+docker exec kafka2 kafka-broker-api-versions.sh --bootstrap-server kafka2:9092
+docker exec kafka3 kafka-broker-api-versions.sh --bootstrap-server kafka3:9092
+
+Creating Topics:
+docker exec -it kafka1 /opt/bitnami/kafka/bin/kafka-topics.sh \
+  --create --topic test-topic1 \
+  --partitions 3 \
+  --replication-factor 2 \
+  --bootstrap-server kafka1:9092
+
+Setting Up Producers to Send Data:
+docker exec -it kafka1 /opt/bitnami/kafka/bin/kafka-console-producer.sh \
+  --topic test-topic1 \
+  --bootstrap-server kafka1:9092
+
+Once this command runs, you can start typing messages, and they’ll be sent to test-topic1.
+
+Setting Up Consumers to Receive Data:
+docker exec -it kafka1 /opt/bitnami/kafka/bin/kafka-console-consumer.sh \
+  --topic test-topic1 \
+  --from-beginning \
+  --bootstrap-server kafka1:9092
+
+or
+
+Create Topics and Test Consumers:
+Create a Topic:
+docker exec kafka1 kafka-topics.sh --create --topic replicated-topic --bootstrap-server kafka1:9092 --partitions 3 --replication-factor 3
+
+Produce Messages
+docker exec -it kafka1 kafka-console-producer.sh --topic test-topic --bootstrap-server kafka:9092
+
+Consume Messages:
+docker exec -it kafka1 kafka-console-consumer.sh --topic test-topic --bootstrap-server kafka:9092 --from-beginning
+
+### Ports ###
+For external access to the Kafka cluster, you’ll need to open specific ports for:
+Required Open Ports:
+    Kafka Brokers (External Client Access)
+        Broker 1: Port 29092 (mapped to kafka1's external listener)
+        Broker 2: Port 29093 (mapped to kafka2's external listener)
+        Broker 3: Port 29094 (mapped to kafka3's external listener)
+    Opening these ports allows external clients to connect to each Kafka broker individually. Clients need to use the advertised listener address for each broker, typically set to the public IP of your host.
+    Redpanda Console
+        Redpanda Console: Port 8080 (mapped to redpanda-console)
+
+Optional Internal Ports (Only if Needed)
+If you need to expose Zookeeper externally (for instance, for testing or monitoring Zookeeper directly), open:
+    Zookeeper: Port 2181
+However, this is generally only necessary for management or monitoring; Kafka itself uses Zookeeper internally for broker coordination.
+
+
+### Send Test Data ###
+Test the Service by test-app:
+Run this command:
+curl -X POST http://localhost:5000/send
+Every time you hit this endpoint, it will generate random data and send it to test-topic1 in your Kafka cluster.
+
+or
+
+docker exec -it kafka1 /opt/bitnami/kafka/bin/kafka-console-producer.sh \
+  --topic test-topic1 \
+  --bootstrap-server kafka1:9092
+
+Once this command runs, you can start typing messages, and they’ll be sent to test-topic1.
