@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  splunk:
+    image: splunk/splunk:latest
+    container_name: splunk
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD=YourSecurePassword  # Set a strong password
+      - SPLUNK_HEC_TOKEN=your_hec_token     # Replace with your HEC token
+      - SPLUNK_HEC_PORT=8088                # HEC Port for receiving events
+      - SPLUNK_HEC_ENABLE=true              # Enable HEC
+      - SPLUNK_INSECURE_SSL=true            # Disable SSL verification (optional)
+    ports:
+      - "8000:8000"   # Splunk Web
+      - "8088:8088"   # HEC Port
+      - "8089:8089"   # Splunk Management Port
+    volumes:
+      - splunk-data:/opt/splunk/var
+
+volumes:
+  splunk-data:
