@@ -6,7 +6,7 @@
 <br />
 3- Install kubectl<br />
 <br />
-4- Install rke CLI (change version ):<br />
+4- Install rke CLI (change version):<br />
 curl -LO https://github.com/rancher/rke/releases/download/v1.3.14/rke_linux-amd64<br />
 sudo mv rke_linux-amd64 /usr/local/bin/rke<br />
 sudo chmod +x /usr/local/bin/rke<br />
