@@ -1,0 +1,79 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  #GIT_CLEAN_FLAGS: none     # For skip removig build stage files
+  DOCKER_REGISTRY: 127.0.0.1:5100
+  DOCKER_IMAGE_NAME: mhykari-test/test/java-test
+  DOCKER_IMAGE_TAG: 2.0
+  DOCKER_IMAGE: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+  BUILD_DIR: java-gitlab-test
+  TARGET_DIR: "/opt/$BUILD_DIR"   # <-- separate directory for docker-compose.yml
+
+# Tell GitLab to use a specific runner
+default:
+  tags:
+    - shell-runner     # <== Replace with your actual runner tag
+
+# --------------------
+# Build Docker image
+# --------------------
+build_image:
+  stage: build
+  script:
+    # Login to Docker registry
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin http://127.0.0.1:5100
+
+    # Create build directory
+    - mkdir -p $BUILD_DIR
+
+    # Copy JAR file into build directory
+    - cp ./project/target/java-api-1.0-SNAPSHOT.jar $BUILD_DIR/java-api-1.0-SNAPSHOT.jar
+
+    # Create Dockerfile in build directory
+    - |
+      cat <<EOF > $BUILD_DIR/Dockerfile
+      FROM openjdk:17-jdk-slim
+      WORKDIR /app
+      COPY ./java-api-1.0-SNAPSHOT.jar app.jar
+      EXPOSE 8080
+      ENTRYPOINT ["java", "-jar", "app.jar"]
+      EOF
+
+    # Build & push image
+    - docker build -t $DOCKER_IMAGE $BUILD_DIR
+    - docker push $DOCKER_IMAGE
+
+    # Create docker-compose.yml dynamically
+    - |
+      cat <<EOF > ./docker-compose.yml
+      services:
+        java-api:
+          image: $DOCKER_IMAGE
+          container_name: java-api-test
+          ports:
+            - "8080:8080"
+          restart: always
+      EOF
+
+    # Create docker-compose file target directory
+    - echo "Creating target directory"
+    - mkdir -p "$TARGET_DIR"
+
+    # Copy docker-compose file to target directory
+    - echo "Copying docker-compose.yml to $TARGET_DIR"
+    - cp docker-compose.yml "$TARGET_DIR/docker-compose.yml"
+    
+# --------------------
+# Deploy Docker containers
+# --------------------
+deploy_app:
+  stage: deploy
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin http://127.0.0.1:5100
+
+    # Use the generated docker-compose.yml
+    - docker compose -f "$TARGET_DIR/docker-compose.yml" pull
+    - docker compose -f "$TARGET_DIR/docker-compose.yml" down
+    - docker compose -f "$TARGET_DIR/docker-compose.yml" up -d

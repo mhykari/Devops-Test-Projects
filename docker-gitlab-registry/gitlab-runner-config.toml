@@ -1,0 +1,36 @@
+concurrent = 1
+check_interval = 0
+connection_max_age = "15m0s"
+shutdown_timeout = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "docker-runner"
+  url = "gitlab-url"
+  id = 7
+  token = "your-gitlab-token"
+  token_obtained_at = 2025-08-17T06:18:06Z
+  token_expires_at = 0001-01-01T00:00:00Z
+  executor = "docker"
+  [runners.cache]
+    MaxUploadedArchiveSize = 0
+    [runners.cache.s3]
+    [runners.cache.gcs]
+    [runners.cache.azure]
+  [runners.docker]
+    tls_verify = false
+    image = "docker:20.10"      # For docker-ruuner
+    pull_policy = "if-not-present"    # For docker-ruuner
+    privileged = true     # true if need to take action on the host
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    shm_size = 0
+    network_mtu = 0
+    volumes = [
+      "/var/run/docker.sock:/var/run/docker.sock",      # For docker-ruuner DooD mode
+      "/opt:/opt",      # For docker-ruuner to mount the builded docker-compose file to the host
+      "/cache"
+    ]

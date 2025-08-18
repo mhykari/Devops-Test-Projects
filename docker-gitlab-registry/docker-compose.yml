@@ -1,0 +1,77 @@
+networks:
+  gitlab-net:
+    driver: bridge
+
+volumes:
+  gitlab_data:
+    name: gitlab_data
+  gitlab_logs:
+    name: gitlab_logs
+  gitlab_config:
+    name: gitlab_config
+
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: always
+    container_name: gitlab
+    hostname: gitlab.local
+    mem_limit: 4g    # Max memory allowed
+    cpus: 4          # Max CPU cores allowed
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        # Gitlab external url
+        external_url 'http://192.168.43.212'
+
+        # Change the initial default admin password
+        gitlab_rails['initial_root_password'] = "1234ABcd5678"
+        gitlab_rails['display_initial_root_password'] = "false"
+        gitlab_rails['store_initial_root_password'] = "false"
+
+        # Nginx Configuration
+        nginx['client_max_body_size'] = '10240m'
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        nginx['proxy_cache'] = 'gitlab'
+        nginx['http2_enabled'] = true
+
+        # Disable unuse services
+        prometheus['enable'] = false
+        alertmanager['enable'] = false
+        pgbouncer_exporter['enable'] = false
+        puma['exporter_enabled'] = false
+        gitlab_exporter['enable'] = false
+        node_exporter['enable'] = false
+        sidekiq['metrics_enabled'] = false
+        redis_exporter['enable'] = false
+        postgres_exporter['enable'] = false
+
+        # SSH on custom port
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+
+        # Gitlab registry config
+        registry['enable'] = true
+        registry_external_url 'http://192.168.43.212'
+        registry_nginx['listen_port'] = 5100
+        registry_nginx['listen_https'] = false
+        registry_nginx['proxy_set_headers'] = {
+          "Host" => "$$http_host",
+          "X-Real-IP" => "$$remote_addr",
+          "X-Forwarded-For" => "$$proxy_add_x_forwarded_for",
+          "X-Forwarded-Proto" => "$$scheme",
+          "X-Forwarded-Ssl" => "on"
+        }
+        gitlab_rails['registry_enabled'] = true
+        gitlab_rails['registry_host'] = "172.29.234.44"
+        gitlab_rails['registry_port'] = "5100"
+        gitlab_rails['registry_api_url'] = "http://192.168.43.212:5100"
+
+    volumes:
+      - gitlab_data:/var/opt/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_config:/etc/gitlab
+    ports:
+      - '80:80'    # HTTP
+      - '443:443'     # HTTPS
+      - '2222:22'      # SSH
+      - '5100:5100'    # GitLab Container Registry (HTTP)
