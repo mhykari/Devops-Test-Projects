@@ -13,9 +13,9 @@ docker compose up -d<br />
 }<br />
 <br />
 3- Test push and pull images:<br />
-docker login <your-gitlab-domain>:5100 <br />
-docker tag my-image:latest your-gitlab-domain:5100/<username>/<project>/<image-name>:<tag> <br />
-docker push your-gitlab-domain:5100/<username>/<project>/<image-name>:<tag> <br />
+docker login your-gitlab-domain:5100 <br />
+docker tag my-image:latest your-gitlab-domain:5100/username/project/image-name:tag <br />
+docker push your-gitlab-domain:5100/username/project/image-name:tag <br />
 <br />
 4- Install and setup gitlab runner and register runners<br />
 sudo gitlab-runner install --user=root --working-directory=/root/gitlab-runner<br />
