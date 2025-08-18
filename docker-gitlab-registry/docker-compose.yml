@@ -16,15 +16,15 @@ services:
     restart: always
     container_name: gitlab
     hostname: gitlab.local
-    mem_limit: 4g    # Max memory allowed
-    cpus: 4          # Max CPU cores allowed
+    mem_limit: 4g    # Set max memory allowed
+    cpus: 4          # Set max CPU cores allowed
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         # Gitlab external url
-        external_url 'http://192.168.43.212'
+        external_url 'http://your-gitlab-url'    # Set your gitlab url
 
         # Change the initial default admin password
-        gitlab_rails['initial_root_password'] = "1234ABcd5678"
+        gitlab_rails['initial_root_password'] = "root-password"    # Set your root password
         gitlab_rails['display_initial_root_password'] = "false"
         gitlab_rails['store_initial_root_password'] = "false"
 
@@ -51,7 +51,7 @@ services:
 
         # Gitlab registry config
         registry['enable'] = true
-        registry_external_url 'http://192.168.43.212'
+        registry_external_url 'http://your-gitlab-url'    # Set your gitlab url
         registry_nginx['listen_port'] = 5100
         registry_nginx['listen_https'] = false
         registry_nginx['proxy_set_headers'] = {
@@ -64,7 +64,7 @@ services:
         gitlab_rails['registry_enabled'] = true
         gitlab_rails['registry_host'] = "172.29.234.44"
         gitlab_rails['registry_port'] = "5100"
-        gitlab_rails['registry_api_url'] = "http://192.168.43.212:5100"
+        gitlab_rails['registry_api_url'] = "http://your-gitlab-url:5100"    # Set your gitlab url
 
     volumes:
       - gitlab_data:/var/opt/gitlab
