@@ -22,7 +22,7 @@ sudo gitlab-runner install --user=root --working-directory=/root/gitlab-runner<b
 gitlab-runner register<br />
 gitlab-runner verify<br />
 <br />
-* Change the gitlab runner config.toml if you are using the docker runner.<br />
+* Change the gitlab runner config.toml in ~/.gitlab-runner/config.toml if you are using the docker runner.<br />
 <br />
 5- Use the project and gitlab-ci.ynm file in repo tu build and deploy the java api test project<br />
 <br />
