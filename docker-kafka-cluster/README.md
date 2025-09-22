@@ -5,6 +5,7 @@
 Steps to setup and test:<br />
 1- Git pull<br />
 2- docker compose -f kafka-cluster-zookeeper.yml up -d or  docker compose -f kafka-cluster-controller.yml up -d <br />
+* For kafka-cluster-controller.yml the console-config.yml has to be created beside docker compose file. <br />
 3- Wait until all containers be up and healthy<br />
 4- Access Redpanda Console: Open http://localhost:8080 in your browser.<br />
 <br />
