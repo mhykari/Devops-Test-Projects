@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ${JENKINS_HOME_PATH}:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker:ro
+      - /usr/libexec/docker/cli-plugins:/usr/libexec/docker/cli-plugins:ro
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    networks:
+      - jenkins
+
+  agent:
+    image: jenkins/ssh-agent:jdk21
+    container_name: jenkins_agent
+    privileged: true
+    user: root
+    expose:
+      - "22"
+    environment:
+      - JENKINS_AGENT_SSH_PUBKEY=${JENKINS_AGENT_SSH_PUBLIC_KEY}
+    restart: unless-stopped
+    networks:
+      - jenkins
+
+networks:
+  jenkins:
