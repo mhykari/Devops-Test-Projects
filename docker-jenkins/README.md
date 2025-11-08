@@ -36,8 +36,6 @@ sudo gitlab-runner install --user=root --working-directory=/root/gitlab-runner<b
 gitlab-runner register<br />
 gitlab-runner verify<br />
 <br />
-* Change the gitlab runner config.toml in ~/.gitlab-runner/config.toml if you are using the docker runner.<br />
-<br />
 5- Create jenkinsfile or copy the content of jenkinsfile in pipline in jenkins controller UI
 <br />
 6- check http://127.0.0.1:8085 to verify the test project deployed successfully.<br />
