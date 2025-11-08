@@ -1,7 +1,7 @@
 # Setup jenkins and jdk21 ssh agent using docker and test java api pipeline test<br />
 - Docker compose file to setup a local jenkins with jdk21 ssh agent<br />
-- A simple java api project for test gitlab ci/cd<br />
-- jenkinsfile for java-api ci/cd<br />
+- A simple java api project for testing gitlab ci/cd<br />
+- jenkinsfile pipeline for java-api ci/cd<br />
 <br />
 This project deploy the jenkins controller and ssh agent to run pipeline for java-api ci/cd
 How to use:<br />
@@ -31,10 +31,7 @@ Add Credential:<br />
 Username: jenkins<br />
 Private Key: "/var/jenkins_home/.ssh/id_rsa" #private key of jenkins user in controller node<br />
 <br />
-4- Create Pipeline Project<br />
-sudo gitlab-runner install --user=root --working-directory=/root/gitlab-runner<br />
-gitlab-runner register<br />
-gitlab-runner verify<br />
+4- Create Pipeline Project and run the pipeline<br />
 <br />
 5- Create jenkinsfile or copy the content of jenkinsfile in pipline in jenkins controller UI
 <br />
