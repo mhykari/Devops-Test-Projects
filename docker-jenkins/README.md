@@ -1,4 +1,4 @@
-# Setup jenkins and jdk21 ssh agent using docker and test java api pipeline test<br />
+# Setup jenkins and jdk21 ssh agent using docker and java api pipeline ci/cd test<br />
 - Docker compose file to setup a local jenkins with jdk21 ssh agent<br />
 - A simple java api project for testing gitlab ci/cd<br />
 - jenkinsfile pipeline for java-api ci/cd<br />
